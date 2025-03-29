@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics, permissions, filters
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -44,3 +43,52 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
         if instance.user != self.request.user:
             raise permissions.PermissionDenied("You can only delete your own reviews.")
         instance.delete()
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Review
+from .forms import ReviewForm  # We'll create this next
+
+def review_list(request):
+    reviews = Review.objects.all()
+    if request.GET.get('search'):
+        reviews = reviews.filter(movie_title__icontains=request.GET['search'])
+    return render(request, 'reviews/review_list.html', {'reviews': reviews})
+
+@login_required
+def review_create(request):
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.save()
+            return redirect('review-list')
+    else:
+        form = ReviewForm()
+    return render(request, 'reviews/review_form.html', {'form': form})
+
+@login_required
+def review_update(request, pk):
+    review = Review.objects.get(pk=pk)
+    if review.user != request.user:
+        return redirect('review-list')
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            return redirect('review-list')
+    else:
+        form = ReviewForm(instance=review)
+    return render(request, 'reviews/review_form.html', {'form': form})
+
+@login_required
+def review_delete(request, pk):
+    review = Review.objects.get(pk=pk)
+    if review.user != request.user:
+        return redirect('review-list')
+    if request.method == 'POST':
+        review.delete()
+        return redirect('review-list')
+    return render(request, 'reviews/review_confirm_delete.html', {'review': review})

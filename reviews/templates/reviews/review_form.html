@@ -1,0 +1,12 @@
+<!-- templates/reviews/review_form.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% if form.instance.pk %}Edit Review{% else %}Add Review{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'review-list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

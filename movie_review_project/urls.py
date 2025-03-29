@@ -16,12 +16,14 @@ Including another URLconf
 """
 
 
+# movie_review_project/urls.py
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('reviews.urls')),  # API endpoints
-    path('api-auth/', include('rest_framework.urls')),  # DRF login/logout
-    path('', include('reviews.urls')),  # Include reviews URLs at root
+    path('api-auth/', include('rest_framework.urls')),  # DRF login/logout for API
+    path('accounts/', include('django.contrib.auth.urls')),  # Django auth URLs for login/logout
+    path('', include('reviews.urls')),  # Root path for reviews app
 ]

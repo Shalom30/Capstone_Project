@@ -209,3 +209,6 @@ REST_FRAMEWORK = {
 }
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# movie_review_project/settings.py
+LOGIN_REDIRECT_URL = '/'  # Redirect to root (review list) after login
+LOGOUT_REDIRECT_URL = '/'  # Redirect to root (review list) after logout

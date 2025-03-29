@@ -207,3 +207,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'

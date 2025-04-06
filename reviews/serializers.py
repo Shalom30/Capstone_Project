@@ -5,10 +5,20 @@ from .models import Review
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username', 'email', 'password']
+        extra_kwargs = {'password': {'write_only': True}}  # Password not returned in responses
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)  # Hash password on creation
+        return user
+
+    def update(self, instance, validated_data):
+        if 'password' in validated_data:
+            instance.set_password(validated_data.pop('password'))  # Hash new password on update
+        return super().update(instance, validated_data)
 
 class ReviewSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True)  # Show user details, but read-only
 
     class Meta:
         model = Review
